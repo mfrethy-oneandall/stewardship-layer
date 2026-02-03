@@ -1,0 +1,19 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+type: software
+title: "Stewardship Layer"
+abstract: "A lightweight pattern and reference implementation for human-in-the-loop control of autonomous agents and automation."
+authors:
+  - family-names: "Frethy"
+    given-names: "Mike"
+    orcid: ""
+repository-code: "https://github.com/mfrethy-oneandall/stewardship-layer"
+url: "https://github.com/mfrethy-oneandall/stewardship-layer"
+license: Apache-2.0
+version: "0.1.0"
+date-released: "2025-02-02"
+keywords:
+  - automation
+  - human-in-the-loop
+  - governance
+  - agents

@@ -1,0 +1,42 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/mfrethy-oneandall/stewardship-layer/schemas/proposal.schema.json",
+  "title": "Proposal",
+  "description": "A proposal submitted to the stewardship gate for review and execution",
+  "type": "object",
+  "properties": {
+    "proposal_id": {
+      "type": "string",
+      "description": "Unique identifier for this proposal (e.g., pl-a1b2c3d4)"
+    },
+    "actor": {
+      "type": "string",
+      "description": "Identifier of the agent or system submitting the proposal"
+    },
+    "action": {
+      "type": "string",
+      "description": "The action to be performed"
+    },
+    "resource": {
+      "type": "string",
+      "description": "The resource the action will affect"
+    },
+    "domain": {
+      "type": "string",
+      "description": "The domain or category of the action (e.g., lights, switches)"
+    },
+    "rationale": {
+      "type": "string",
+      "description": "Explanation of why this action is being proposed"
+    },
+    "rollback_plan": {
+      "type": ["string", "null"],
+      "description": "How to reverse this action if needed, or null if not reversible"
+    },
+    "trace_id": {
+      "type": "string",
+      "description": "Trace identifier for correlating related operations (e.g., tr-a1b2c3d4)"
+    }
+  },
+  "required": ["proposal_id", "actor", "action", "resource", "domain", "trace_id"]
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/mfrethy-oneandall/stewardship-layer/schemas/decision.schema.json",
+  "title": "Decision",
+  "description": "A decision made on a proposal by a human steward or automated policy",
+  "type": "object",
+  "properties": {
+    "proposal_id": {
+      "type": "string",
+      "description": "The proposal_id this decision applies to"
+    },
+    "approved": {
+      "type": "boolean",
+      "description": "Whether the proposal was approved (true) or denied (false)"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Explanation for the decision (e.g., auto-approved, human approved, human denied)"
+    },
+    "approver": {
+      "type": "string",
+      "description": "Identifier of who or what made the decision"
+    },
+    "timestamp": {
+      "type": "number",
+      "description": "Unix timestamp when the decision was made"
+    }
+  },
+  "required": ["proposal_id", "approved", "reason", "approver", "timestamp"]
+}
