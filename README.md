@@ -1,8 +1,10 @@
 # Stewardship Layer
 
+![Governed Collaboration Loop](assets/governed-collaboration-loop.png)
+
 [![CI](https://github.com/mfrethy-oneandall/stewardship-layer/actions/workflows/ci.yaml/badge.svg)](https://github.com/mfrethy-oneandall/stewardship-layer/actions/workflows/ci.yaml)
 
-A lightweight pattern and reference implementation for human-in-the-loop control of autonomous agents and automation. It packages a clear governance loop—Propose → Explain → Confirm → Execute → Learn—so teams can ship automation without surrendering agency.
+A lightweight pattern and reference implementation for governed collaboration between agents and the systems they control. It packages a clear governance loop—Propose → Explain → Confirm → Execute → Learn—so teams can ship automation without surrendering agency.
 
 ## Table of Contents
 
@@ -27,7 +29,7 @@ Automation systems and AI agents increasingly propose or execute actions with re
 - There's no clear rollback path for failed actions
 - Rate limits or blast radius controls don't exist
 
-The stewardship layer addresses these by inserting a gate between intent and execution. Every action flows through Propose → Explain → Confirm → Execute → Learn. Humans retain final say. All decisions are logged.
+The stewardship layer addresses these by inserting a gate between intent and execution. Every action flows through Propose → Explain → Confirm → Execute → Learn. A steward (human or authorized agent) retains final authority. All decisions are logged.
 
 **Concrete use cases:**
 

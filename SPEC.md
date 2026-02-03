@@ -3,7 +3,7 @@
 ## Actors
 - **Agent**: Produces proposals; cannot self-execute without approval.
 - **Stewardship Gate**: Mediates proposals, enforces policies, records audit entries.
-- **Human Steward**: Reviews explanations, issues APPROVE/DENY.
+- **Steward**: Authorized actor (human or automated) that reviews explanations and issues APPROVE/DENY.
 - **Execution Target**: System being acted upon (e.g., Home Assistant, CI job).
 
 ## Interfaces
@@ -50,7 +50,7 @@ JSON Schema definitions for Proposal and Decision are available in [schemas/](sc
 ```
 
 ## Threat model & controls
-- **Prompt injection / overreach**: Normalize proposals, strip untrusted instructions, require allowlist match; human confirmation before execution.
+- **Prompt injection / overreach**: Normalize proposals, strip untrusted instructions, require allowlist match; steward confirmation before execution.
 - **Privilege escalation**: Run gate with least-privilege credentials; map actions to roles; enforce per-actor rate limits and safe domains.
 - **Silent failure**: Mandatory audit logging for every stage; health checks on logger; surfaced reasons on deny.
 - **Irreversible actions**: Reversibility-required policy; block if rollback_plan missing or unsafe; prefer dry-runs and staged rollout.
@@ -59,7 +59,7 @@ JSON Schema definitions for Proposal and Decision are available in [schemas/](sc
 - Approval rate, denial reasons (top N), time-to-decision, execution success rate, rollback incidence, rate-limit hits, audit log durability checks.
 
 ## Controls summary
-- Human confirmation gate with default DENY.
+- Steward confirmation gate with default DENY.
 - Allowlist/safe-domain auto-approval for low-risk operations only.
 - Rate limiting and blast-radius sampling on target sets.
 - Explainability: human-readable summaries and risk callouts.

@@ -4,7 +4,7 @@ This document describes the stewardship layer API for agents that integrate with
 
 ## What the Gate Does
 
-The `StewardshipGate` class receives proposals, evaluates them against configured policies, and either auto-approves (if all policies pass) or delegates to a decision function. Approved proposals are executed through a provided executor. All stages are logged to an append-only audit log.
+The `StewardshipGate` class receives proposals, evaluates them against configured policies, and either auto-approves (if all policies pass) or delegates to a steward decision function. Approved proposals are executed through a provided executor. All stages are logged to an append-only audit log.
 
 ## The Five-Step Loop
 
@@ -14,7 +14,7 @@ The gate implements this sequence:
 
 2. **Explain**: Generate a human-readable summary of the proposal including policy evaluation results. Called automatically during `decide()`.
 
-3. **Decide**: Evaluate policies (allowlist, safe_domain, reversibility). If all pass, auto-approve. Otherwise, call the provided `decision_fn` with the explanation. Returns a `Decision`.
+3. **Decide**: Evaluate policies (allowlist, safe_domain, reversibility). If all pass, auto-approve. Otherwise, call the provided `decision_fn` with the explanation. The decision function may represent a human or automated steward. Returns a `Decision`.
 
 4. **Execute**: If approved and rate limit allows, call the executor. Returns an `ExecutionResult` with status (SUCCESS, SKIPPED, FAILURE).
 
