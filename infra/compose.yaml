@@ -1,0 +1,24 @@
+# Stewardship Stack — Docker Compose
+# First vertical slice: Shammash only
+
+services:
+  shammash:
+    build:
+      context: ../core/shammash
+      dockerfile: Dockerfile
+    container_name: shammash
+    ports:
+      - "8099:8099"
+    env_file:
+      - .env
+    volumes:
+      - ../shared/audit:/app/shared/audit
+      - ../shared/policy:/app/shared/policy:ro
+      - ../shared/schemas:/app/shared/schemas:ro
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "python", "-c", "import sys, httpx; r=httpx.get('http://localhost:8099/health'); sys.exit(0 if r.status_code==200 else 1)" ]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

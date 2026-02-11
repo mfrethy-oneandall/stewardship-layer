@@ -1,0 +1,72 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "audit_event.v1",
+    "title": "AuditEvent.v1",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "schema_version",
+        "event_id",
+        "timestamp",
+        "service",
+        "event_type",
+        "correlation",
+        "payload"
+    ],
+    "properties": {
+        "schema_version": {
+            "type": "string",
+            "const": "v1"
+        },
+        "event_id": {
+            "type": "string",
+            "format": "uuid"
+        },
+        "timestamp": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "service": {
+            "type": "string",
+            "enum": [
+                "samuel",
+                "nathan",
+                "openclaw",
+                "shammash"
+            ]
+        },
+        "event_type": {
+            "type": "string",
+            "enum": [
+                "counsel_request.in",
+                "advisory_packet.out",
+                "swarm_job.out",
+                "execution_proposal.in",
+                "law_decision",
+                "execution_attempt",
+                "execution_receipt.out",
+                "error"
+            ]
+        },
+        "correlation": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "request_id"
+            ],
+            "properties": {
+                "request_id": {
+                    "type": "string",
+                    "format": "uuid"
+                },
+                "proposal_id": {
+                    "type": "string",
+                    "format": "uuid"
+                }
+            }
+        },
+        "payload": {
+            "type": "object"
+        }
+    }
+}

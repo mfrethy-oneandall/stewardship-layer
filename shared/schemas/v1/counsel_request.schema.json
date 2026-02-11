@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "counsel_request.v1",
+  "title": "CounselRequest.v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "request_id",
+    "timestamp",
+    "source",
+    "user_intent",
+    "context_snapshot",
+    "impact_guess",
+    "urgency"
+  ],
+  "properties": {
+    "schema_version": { "type": "string", "const": "v1" },
+    "request_id": { "type": "string", "format": "uuid" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "source": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["service", "instance"],
+      "properties": {
+        "service": { "type": "string", "enum": ["samuel"] },
+        "instance": { "type": "string" }
+      }
+    },
+    "user_intent": { "type": "string", "minLength": 1, "maxLength": 500 },
+    "context_snapshot": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "summary": { "type": "string", "maxLength": 2000 },
+        "facts": {
+          "type": "array",
+          "items": { "type": "string", "maxLength": 300 },
+          "maxItems": 50
+        },
+        "signals": {
+          "type": "array",
+          "items": { "type": "string", "maxLength": 300 },
+          "maxItems": 50
+        },
+        "recent_changes": {
+          "type": "array",
+          "items": { "type": "string", "maxLength": 300 },
+          "maxItems": 50
+        },
+        "constraints": {
+          "type": "array",
+          "items": { "type": "string", "maxLength": 200 },
+          "maxItems": 30
+        }
+      }
+    },
+    "proposed_actions": {
+      "type": "array",
+      "maxItems": 10,
+      "items": { "type": "object" }
+    },
+    "impact_guess": { "type": "string", "enum": ["low", "med", "high"] },
+    "urgency": { "type": "string", "enum": ["now", "soon", "later"] },
+    "allowed_questions": {
+      "type": "string",
+      "enum": ["none", "minimal", "normal"],
+      "default": "minimal"
+    },
+    "attachments": {
+      "type": "array",
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["kind", "ref"],
+        "properties": {
+          "kind": {
+            "type": "string",
+            "enum": ["log", "config", "url", "note"]
+          },
+          "ref": { "type": "string", "maxLength": 2000 }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,32 @@
+# Shammash Policy v1
+# Stub policy: default deny with allowlist-based overrides.
+# Parsed once at startup. Expanded later as needed.
+
+version: v1
+
+default_decision: deny
+
+# Action types Shammash will execute. Everything else is denied.
+allow_actions:
+  - toggle_entity
+  - turn_on
+  - turn_off
+
+# Entity IDs Shammash may act upon.
+# Override at runtime via SHAMMASH_ALLOWLIST env var.
+# If the env var is set, it takes precedence over this list.
+allow_entities:
+  - light.test_lamp
+  - switch.test_switch
+
+# Safety: target.entity_id must equal expected_outcome.verify.entity_id
+enforce_target_verify_equality: true
+
+# Blast radius limits
+max_blast_radius: room  # single_device | room | whole_home | network_wide
+
+# Verification
+verification:
+  max_timeout_seconds: 60
+  default_timeout_seconds: 10
+  poll_interval_seconds: 1

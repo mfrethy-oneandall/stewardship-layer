@@ -1,0 +1,101 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "execution_receipt.v1",
+    "title": "ExecutionReceipt.v1",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "schema_version",
+        "proposal_id",
+        "timestamp",
+        "source",
+        "decision",
+        "policy_basis",
+        "verification",
+        "audit_ref"
+    ],
+    "properties": {
+        "schema_version": {
+            "type": "string",
+            "const": "v1"
+        },
+        "proposal_id": {
+            "type": "string",
+            "format": "uuid"
+        },
+        "timestamp": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "source": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "service",
+                "instance"
+            ],
+            "properties": {
+                "service": {
+                    "type": "string",
+                    "enum": [
+                        "shammash"
+                    ]
+                },
+                "instance": {
+                    "type": "string"
+                }
+            }
+        },
+        "decision": {
+            "type": "string",
+            "enum": [
+                "allowed",
+                "denied",
+                "allowed_with_conditions",
+                "failed"
+            ]
+        },
+        "policy_basis": {
+            "type": "array",
+            "items": {
+                "type": "string",
+                "maxLength": 80
+            },
+            "maxItems": 20
+        },
+        "action_taken": {
+            "type": "object"
+        },
+        "verification": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "pass",
+                "evidence"
+            ],
+            "properties": {
+                "pass": {
+                    "type": "boolean"
+                },
+                "evidence": {
+                    "type": "string",
+                    "maxLength": 1500
+                }
+            }
+        },
+        "before_state": {
+            "type": "object"
+        },
+        "after_state": {
+            "type": "object"
+        },
+        "audit_ref": {
+            "type": "string",
+            "maxLength": 300
+        },
+        "failure_language_hint": {
+            "type": "string",
+            "maxLength": 400
+        }
+    }
+}

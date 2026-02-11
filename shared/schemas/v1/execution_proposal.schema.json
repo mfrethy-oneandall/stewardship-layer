@@ -1,0 +1,217 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "execution_proposal.v1",
+    "title": "ExecutionProposal.v1",
+    "type": "object",
+    "additionalProperties": false,
+    "required": [
+        "schema_version",
+        "proposal_id",
+        "request_id",
+        "timestamp",
+        "source",
+        "action",
+        "justification",
+        "expected_outcome"
+    ],
+    "properties": {
+        "schema_version": {
+            "type": "string",
+            "const": "v1"
+        },
+        "proposal_id": {
+            "type": "string",
+            "format": "uuid"
+        },
+        "request_id": {
+            "type": "string",
+            "format": "uuid"
+        },
+        "timestamp": {
+            "type": "string",
+            "format": "date-time"
+        },
+        "source": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "service",
+                "instance"
+            ],
+            "properties": {
+                "service": {
+                    "type": "string",
+                    "enum": [
+                        "samuel"
+                    ]
+                },
+                "instance": {
+                    "type": "string"
+                }
+            }
+        },
+        "action": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+                "domain",
+                "type",
+                "target",
+                "parameters",
+                "metadata",
+                "expected_outcome"
+            ],
+            "properties": {
+                "domain": {
+                    "type": "string",
+                    "const": "home_assistant"
+                },
+                "type": {
+                    "type": "string",
+                    "enum": [
+                        "toggle_entity",
+                        "turn_on",
+                        "turn_off",
+                        "set_scene",
+                        "set_value"
+                    ]
+                },
+                "target": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                        "entity_id"
+                    ],
+                    "properties": {
+                        "entity_id": {
+                            "type": "string",
+                            "pattern": "^[a-z0-9_]+\\.[a-z0-9_]+$"
+                        }
+                    }
+                },
+                "parameters": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "properties": {
+                        "value": {
+                            "type": [
+                                "number",
+                                "integer",
+                                "string",
+                                "boolean",
+                                "null"
+                            ]
+                        },
+                        "min": {
+                            "type": [
+                                "number",
+                                "integer"
+                            ]
+                        },
+                        "max": {
+                            "type": [
+                                "number",
+                                "integer"
+                            ]
+                        }
+                    }
+                },
+                "metadata": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                        "reversibility",
+                        "blast_radius",
+                        "safety_tags"
+                    ],
+                    "properties": {
+                        "reversibility": {
+                            "type": "string",
+                            "enum": [
+                                "reversible",
+                                "semi",
+                                "irreversible"
+                            ]
+                        },
+                        "blast_radius": {
+                            "type": "string",
+                            "enum": [
+                                "single_device",
+                                "room",
+                                "whole_home",
+                                "network_wide"
+                            ]
+                        },
+                        "safety_tags": {
+                            "type": "array",
+                            "items": {
+                                "type": "string",
+                                "maxLength": 40
+                            },
+                            "maxItems": 10
+                        }
+                    }
+                },
+                "expected_outcome": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                        "verify",
+                        "timeout_seconds"
+                    ],
+                    "properties": {
+                        "verify": {
+                            "type": "object",
+                            "additionalProperties": false,
+                            "required": [
+                                "entity_id",
+                                "attribute",
+                                "equals"
+                            ],
+                            "properties": {
+                                "entity_id": {
+                                    "type": "string",
+                                    "pattern": "^[a-z0-9_]+\\.[a-z0-9_]+$"
+                                },
+                                "attribute": {
+                                    "type": "string",
+                                    "maxLength": 64
+                                },
+                                "equals": {
+                                    "type": [
+                                        "string",
+                                        "number",
+                                        "integer",
+                                        "boolean",
+                                        "null"
+                                    ]
+                                }
+                            }
+                        },
+                        "timeout_seconds": {
+                            "type": "integer",
+                            "minimum": 1,
+                            "maximum": 120
+                        }
+                    }
+                }
+            }
+        },
+        "justification": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 600
+        },
+        "confirmation_token": {
+            "type": "string",
+            "maxLength": 500
+        },
+        "steward_key_token": {
+            "type": "string",
+            "maxLength": 500
+        },
+        "expected_outcome": {
+            "type": "object"
+        }
+    }
+}
