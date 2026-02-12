@@ -21,6 +21,16 @@ from policies import (
 
 
 @dataclass(frozen=True)
+class VerifySpec:
+    equals: str
+
+
+@dataclass(frozen=True)
+class ExpectedOutcome:
+    verify: VerifySpec
+
+
+@dataclass(frozen=True)
 class Proposal:
     proposal_id: str
     actor: str
@@ -30,10 +40,12 @@ class Proposal:
     rationale: str
     rollback_plan: str | None
     trace_id: str
+    expected_outcome: ExpectedOutcome | None = None
 
 
 @dataclass(frozen=True)
 class Decision:
+    decision_id: str
     proposal_id: str
     approved: bool
     reason: str
@@ -62,15 +74,24 @@ class StewardshipGate:
         allowlist: Allowlist,
         safe_domains: Iterable[str],
         rate_limiter: RateLimiter,
+        decision_ttl_seconds: float = 300,
     ) -> None:
         self.audit_log = audit_log
         self.allowlist = allowlist
         self.safe_domains = set(safe_domains)
         self.rate_limiter = rate_limiter
+        self.decision_ttl_seconds = decision_ttl_seconds
 
     # Propose
     def propose(
-        self, actor: str, action: str, resource: str, domain: str, rationale: str, rollback_plan: str | None
+        self,
+        actor: str,
+        action: str,
+        resource: str,
+        domain: str,
+        rationale: str,
+        rollback_plan: str | None,
+        expected_outcome: ExpectedOutcome | None = None,
     ) -> Proposal:
         proposal = Proposal(
             proposal_id=f"pl-{uuid.uuid4().hex[:8]}",
@@ -81,6 +102,7 @@ class StewardshipGate:
             rationale=rationale,
             rollback_plan=rollback_plan,
             trace_id=f"tr-{uuid.uuid4().hex[:8]}",
+            expected_outcome=expected_outcome,
         )
         self.audit_log.append(
             AuditEntry(proposal.proposal_id, proposal.trace_id, "propose", proposal.__dict__, now_ts())
@@ -121,6 +143,7 @@ class StewardshipGate:
         approved = auto_approve or decision_fn(explanation)
         reason = "auto-approved" if auto_approve else ("human approved" if approved else "human denied")
         decision = Decision(
+            decision_id=f"dc-{uuid.uuid4().hex[:8]}",
             proposal_id=proposal.proposal_id,
             approved=approved,
             reason=reason,
@@ -140,7 +163,41 @@ class StewardshipGate:
                 proposal.proposal_id, "SKIPPED", decision.reason, start, now_ts()
             )
             self.audit_log.append(
-                AuditEntry(proposal.proposal_id, proposal.trace_id, "execute", result.__dict__, now_ts())
+                AuditEntry(
+                    proposal.proposal_id, proposal.trace_id, "execute",
+                    {"decision_id": decision.decision_id, **result.__dict__},
+                    now_ts(),
+                )
+            )
+            return result
+
+        # TTL enforcement: reject stale decisions
+        if (start - decision.timestamp) > self.decision_ttl_seconds:
+            result = ExecutionResult(
+                proposal.proposal_id, "EXPIRED", "decision TTL exceeded", start, now_ts()
+            )
+            self.audit_log.append(
+                AuditEntry(
+                    proposal.proposal_id, proposal.trace_id, "execute",
+                    {"decision_id": decision.decision_id, **result.__dict__},
+                    now_ts(),
+                )
+            )
+            return result
+
+        # Require explicit expected_outcome for toggle_entity
+        if proposal.action == "toggle_entity" and proposal.expected_outcome is None:
+            result = ExecutionResult(
+                proposal.proposal_id, "REJECTED",
+                "toggle_entity requires explicit expected_outcome",
+                start, now_ts(),
+            )
+            self.audit_log.append(
+                AuditEntry(
+                    proposal.proposal_id, proposal.trace_id, "execute",
+                    {"decision_id": decision.decision_id, **result.__dict__},
+                    now_ts(),
+                )
             )
             return result
 
@@ -150,14 +207,22 @@ class StewardshipGate:
                 proposal.proposal_id, "SKIPPED", rate_result.reason, start, now_ts()
             )
             self.audit_log.append(
-                AuditEntry(proposal.proposal_id, proposal.trace_id, "execute", result.__dict__, now_ts())
+                AuditEntry(
+                    proposal.proposal_id, proposal.trace_id, "execute",
+                    {"decision_id": decision.decision_id, **result.__dict__},
+                    now_ts(),
+                )
             )
             return result
 
         details = executor(proposal)
         result = ExecutionResult(proposal.proposal_id, "SUCCESS", details, start, now_ts())
         self.audit_log.append(
-            AuditEntry(proposal.proposal_id, proposal.trace_id, "execute", result.__dict__, now_ts())
+            AuditEntry(
+                proposal.proposal_id, proposal.trace_id, "execute",
+                {"decision_id": decision.decision_id, **result.__dict__},
+                now_ts(),
+            )
         )
         return result
 
@@ -174,6 +239,8 @@ class StewardshipGate:
 
 
 __all__ = [
+    "VerifySpec",
+    "ExpectedOutcome",
     "Proposal",
     "Decision",
     "ExecutionResult",
